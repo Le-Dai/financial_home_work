@@ -15,7 +15,7 @@ public class ChatService {
     @Value("${deepseek.api.key}")
     private String apiKey;
 
-    @Value("${deepseek.model}")
+    @Value("${deepseek.api.model}")
     private String model;
 
     @Value("${deepseek.api.url}")

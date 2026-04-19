@@ -3,6 +3,7 @@ package com.example.financial.home.work.controller;
 import com.example.financial.home.work.dto.ChatRequest;
 import com.example.financial.home.work.dto.ChatResponse;
 import com.example.financial.home.work.service.ChatService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class ChatController {
 
     @PostMapping
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
-        if (request.getMessage() == null || request.getMessage().isBlank()) {
+        if (request.getMessage() == null || StringUtils.isBlank(request.getMessage())) {
             return ResponseEntity.badRequest().body(new ChatResponse(false, "消息不能为空"));
         }
         ChatResponse response = chatService.chat(request);
