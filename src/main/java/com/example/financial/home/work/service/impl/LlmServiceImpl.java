@@ -36,14 +36,14 @@ public class LlmServiceImpl implements LlmService {
 
         // 2. 构建请求体（官方标准，无task字段）
         Map<String, Object> requestBody = Map.of(
-                "model", "text-embedding-v2", // 或v3/v4
+                "model", llmConfig.getEmbeddingModel(), // 或v3/v4
                 "input", Map.of("texts", new String[]{text})
         );
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
         // 3. 正确URL（关键！）
-        String url = "https://dashscope.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding";
+        String url = llmConfig.getEmbeddingUrl();
 
         try {
             // 发送请求
