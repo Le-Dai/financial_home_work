@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,8 +54,15 @@ public class LlmTestController {
     @PostMapping("/context-enhance")
     public Map<String, Object> contextEnhance(@RequestBody Map<String, Object> req) {
         String question = (String) req.get("question");
-        List<ChatRecord> history = (List<ChatRecord>) req.get("history");
-
+        // 🔥 绝对安全的接收方式（不会报任何强转错误）
+        List<ChatRecord> history = new ArrayList<>();
+        List<Map<String, Object>> historyMaps = (List<Map<String, Object>>) req.get("history");
+        for (Map<String, Object> map : historyMaps) {
+            ChatRecord record = new ChatRecord();
+            record.setQuestion((String) map.get("question"));
+            record.setAnswer((String) map.get("answer"));
+            history.add(record);
+        }
         String enhanced = llmService.contextEnhance(question, history);
         return Map.of(
                 "code", 200,

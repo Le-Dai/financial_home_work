@@ -23,7 +23,7 @@ public class LlmServiceImpl implements LlmService {
     RestTemplate restTemplate;
 
     // ============================
-    // 接口2：DeepSeek 向量化（修复401）
+    // 接口2：千问向量化（修复401）
     // ============================
     @Override
     public List<Double> embedding(String text) {
@@ -100,7 +100,7 @@ public class LlmServiceImpl implements LlmService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("DeepSeek 调用失败：" + e.getMessage());
+            throw new RuntimeException("千问text-embedding-v4调用失败：" + e.getMessage());
         }
     }
     // ==============================
@@ -127,7 +127,7 @@ public class LlmServiceImpl implements LlmService {
                                         
                     当前问题：%s
                     """.formatted(historyPrompt, question);
-
+            System.out.println(1);
             // 3. 直接调用大模型生成
             return generateAnswer(enhancePrompt);
 
