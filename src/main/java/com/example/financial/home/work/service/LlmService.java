@@ -5,13 +5,13 @@ import com.example.financial.home.work.entity.ChatRecord;
 import java.util.List;
 
 public interface LlmService {
-    /**
-     * 接口2：文本向量化接口
-     * 将用户问题转为向量，用于 Milvus 向量检索
-     * @param text 向量化文本（融合记忆后的用户提问）
-     * @return 一维向量数组 List<Double>
-     */
-    List<Double> embedding(String text);
+//    /**
+//     * 接口2：文本向量化接口
+//     * 将用户问题转为向量，用于 Milvus 向量检索
+//     * @param text 向量化文本（融合记忆后的用户提问）
+//     * @return 一维向量数组 List<Double>
+//     */
+//    List<Double> embedding(String text);
 
     /**
      * 接口3：大模型对话生成接口

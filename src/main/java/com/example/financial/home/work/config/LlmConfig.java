@@ -16,7 +16,7 @@ public class LlmConfig {
     /**
      * 对话模型名称
      */
-    @Value("${deepseek.api.model}")
+    @Value("${deepseek.model}")
     private String model;
 
     /**
@@ -25,21 +25,21 @@ public class LlmConfig {
     @Value("${deepseek.api.url}")
     private String url;
 
-    /**
-     * 文本向量化接口地址
-     */
-    @Value("${aliyun.embedding.url}")
-    private String embeddingUrl;
-
-    /**
-     * 向量化模型名称
-     */
-    @Value("${aliyun.embedding.model}")
-    private String embeddingModel;
-
-    /**
-     * 向量化模型名称
-     */
-    @Value("${aliyun.embedding.key}")
-    private String embeddingKey;
+//    /**
+//     * 文本向量化接口地址
+//     */
+//    @Value("${aliyun.embedding.url}")
+//    private String embeddingUrl;
+//
+//    /**
+//     * 向量化模型名称
+//     */
+//    @Value("${aliyun.embedding.model}")
+//    private String embeddingModel;
+//
+//    /**
+//     * 向量化模型名称
+//     */
+//    @Value("${aliyun.embedding.key}")
+//    private String embeddingKey;
 }

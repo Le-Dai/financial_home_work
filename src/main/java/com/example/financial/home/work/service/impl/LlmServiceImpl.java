@@ -22,43 +22,46 @@ public class LlmServiceImpl implements LlmService {
     @Resource
     RestTemplate restTemplate;
 
+//    // ============================
+//    // 接口2：千问向量化
+//    // ============================
+//    @Override
+//    public List<Double> embedding(String text) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        // 1. 构建请求头（官方标准）
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        // ✅ 正确：必须加 Bearer
+//        headers.set("Authorization", "Bearer " + llmConfig.getEmbeddingKey().trim());
+//
+//        // 2. 构建请求体（官方标准，无task字段）
+//        Map<String, Object> requestBody = Map.of(
+//                "model", llmConfig.getEmbeddingModel(), // 或v3/v4
+//                "input", Map.of("texts", new String[]{text})
+//        );
+//
+//        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+//
+//        // 3. 正确URL（关键！）
+//        String url = llmConfig.getEmbeddingUrl();
+//
+//        try {
+//            // 发送请求
+//            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
+//            Map<String, Object> body = response.getBody();
+//
+//            Map<String, Object> output = (Map<String, Object>) body.get("output");
+//            List<Map<String, Object>> embeddings = (List<Map<String, Object>>) output.get("embeddings");
+//            Map<String, Object> firstEmbedding = embeddings.get(0);
+//
+//            return (List<Double>) firstEmbedding.get("embedding");
+//        } catch (Exception e) {
+//            throw new RuntimeException("向量化失败：" + e.getMessage(), e);
+//        }
+//    }
     // ============================
-    // 接口2：千问向量化（修复401）
+    // 接口3：deepseek对话
     // ============================
-    @Override
-    public List<Double> embedding(String text) {
-        RestTemplate restTemplate = new RestTemplate();
-        // 1. 构建请求头（官方标准）
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // ✅ 正确：必须加 Bearer
-        headers.set("Authorization", "Bearer " + llmConfig.getEmbeddingKey().trim());
-
-        // 2. 构建请求体（官方标准，无task字段）
-        Map<String, Object> requestBody = Map.of(
-                "model", llmConfig.getEmbeddingModel(), // 或v3/v4
-                "input", Map.of("texts", new String[]{text})
-        );
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-
-        // 3. 正确URL（关键！）
-        String url = llmConfig.getEmbeddingUrl();
-
-        try {
-            // 发送请求
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-            Map<String, Object> body = response.getBody();
-
-            Map<String, Object> output = (Map<String, Object>) body.get("output");
-            List<Map<String, Object>> embeddings = (List<Map<String, Object>>) output.get("embeddings");
-            Map<String, Object> firstEmbedding = embeddings.get(0);
-
-            return (List<Double>) firstEmbedding.get("embedding");
-        } catch (Exception e) {
-            throw new RuntimeException("向量化失败：" + e.getMessage(), e);
-        }
-    }
     @Override
     public String generateAnswer(String prompt) {
         try {
