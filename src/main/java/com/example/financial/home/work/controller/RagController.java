@@ -5,6 +5,7 @@ import com.example.financial.home.work.response.ApiResponse;
 import com.example.financial.home.work.response.RagRetrieveData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RagController {
 
+    @Autowired
     private final RestTemplate restTemplate;
 
     // 从配置读取，不要硬编码

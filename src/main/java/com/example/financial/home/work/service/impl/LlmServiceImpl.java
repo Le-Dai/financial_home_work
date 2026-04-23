@@ -1,114 +1,40 @@
 package com.example.financial.home.work.service.impl;
 
-import com.example.financial.home.work.config.LlmConfig;
 import com.example.financial.home.work.entity.ChatRecord;
 import com.example.financial.home.work.service.LlmService;
-import jakarta.annotation.Resource;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.output.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LlmServiceImpl implements LlmService {
 
-    @Resource
-    LlmConfig llmConfig;
-    @Resource
-    RestTemplate restTemplate;
+    private final ChatLanguageModel chatLanguageModel;
 
-//    // ============================
-//    // 接口2：千问向量化
-//    // ============================
-//    @Override
-//    public List<Double> embedding(String text) {
-//        RestTemplate restTemplate = new RestTemplate();
-//        // 1. 构建请求头（官方标准）
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        // ✅ 正确：必须加 Bearer
-//        headers.set("Authorization", "Bearer " + llmConfig.getEmbeddingKey().trim());
-//
-//        // 2. 构建请求体（官方标准，无task字段）
-//        Map<String, Object> requestBody = Map.of(
-//                "model", llmConfig.getEmbeddingModel(), // 或v3/v4
-//                "input", Map.of("texts", new String[]{text})
-//        );
-//
-//        HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-//
-//        // 3. 正确URL（关键！）
-//        String url = llmConfig.getEmbeddingUrl();
-//
-//        try {
-//            // 发送请求
-//            ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-//            Map<String, Object> body = response.getBody();
-//
-//            Map<String, Object> output = (Map<String, Object>) body.get("output");
-//            List<Map<String, Object>> embeddings = (List<Map<String, Object>>) output.get("embeddings");
-//            Map<String, Object> firstEmbedding = embeddings.get(0);
-//
-//            return (List<Double>) firstEmbedding.get("embedding");
-//        } catch (Exception e) {
-//            throw new RuntimeException("向量化失败：" + e.getMessage(), e);
-//        }
-//    }
-    // ============================
-    // 接口3：deepseek对话
-    // ============================
     @Override
     public String generateAnswer(String prompt) {
         try {
-            RestTemplate restTemplate = new RestTemplate();
-
-            // 请求头
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + llmConfig.getApiKey().trim());
-
-            // ===============================
-            // 🔥 关键：必须构造 messages 数组
-            // ===============================
-            Map<String, Object> message = Map.of(
-                    "role", "user",
-                    "content", prompt
-            );
-
-            Map<String, Object> requestBody = Map.of(
-                    "model", llmConfig.getModel(),  // 模型名正确
-                    "messages", List.of(message) // 必须传 messages！！！
-            );
-
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-
-            // 发送请求
-            ResponseEntity<Map> response = restTemplate.postForEntity(
-                    llmConfig.getUrl(),
-                    request,
-                    Map.class
-            );
-
-            // 解析返回
-            Map<String, Object> body = response.getBody();
-            Map<String, Object> choices = ((List<Map<String, Object>>) body.get("choices")).get(0);
-            Map<String, Object> resMessage = (Map<String, Object>) choices.get("message");
-
-            return resMessage.get("content").toString();
-
+            List<ChatMessage> messages = new ArrayList<>();
+            messages.add(UserMessage.from(prompt));
+            
+            Response<AiMessage> response = chatLanguageModel.generate(messages);
+            return response.content().text();
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("千问text-embedding-v4调用失败：" + e.getMessage());
+            log.error("大模型调用失败", e);
+            throw new RuntimeException("大模型调用失败：" + e.getMessage(), e);
         }
     }
-    // ==============================
-    // 接口4：上下文语义增强（补全问题）
-    // ==============================
+
     @Override
     public String contextEnhance(String question, List<ChatRecord> history) {
         try {
@@ -129,8 +55,8 @@ public class LlmServiceImpl implements LlmService {
                     %s
                                         
                     当前问题：%s
-                    """.formatted(historyPrompt, question);
-            System.out.println(1);
+                    """.formatted(historyPrompt.toString(), question);
+
             // 3. 直接调用大模型生成
             return generateAnswer(enhancePrompt);
 
